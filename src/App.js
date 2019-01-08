@@ -6,27 +6,34 @@ import './App.css';
 import Todos from './components/Todos';
 import AddToDo from './components/AddToDo';
 import About from './components/pages/About';
-import uuid from 'uuid';
+// import uuid from 'uuid';
+import axios from 'axios';
 
 class App extends Component {
   state = {
     todos: [
-      {
-        id: uuid.v4(),
-        title: 'Take out the trash',
-        completed: false
-      },
-      {
-        id: uuid.v4(),
-        title: 'Dinner with wife',
-        completed: false
-      },
-      {
-        id: uuid.v4(),
-        title: 'Meeting with boss',
-        completed: false
-      }
+      // Todos is now empty array. We use API request to get data
+      // {
+      //   id: uuid.v4(),
+      //   title: 'Take out the trash',
+      //   completed: false
+      // },
+      // {
+      //   id: uuid.v4(),
+      //   title: 'Dinner with wife',
+      //   completed: false
+      // },
+      // {
+      //   id: uuid.v4(),
+      //   title: 'Meeting with boss',
+      //   completed: false
+      // }
     ]
+  }
+
+  componentDidMount() {
+    axios.get('https://jsonplaceholder.typicode.com/todos?_limit=10')
+      .then(res => this.setState({ todos: res.data}))
   }
 
   // Toggle Complete
@@ -41,17 +48,25 @@ class App extends Component {
 
   // Delete To-Do
   delTodo = (id) => {
-    this.setState({ todos: [...this.state.todos.filter(todo => todo.id !== id)] });
+    axios.delete(`https://jsonplaceholder.typicode.com/todos/${id}`)
+      .then(res => this.setState({ todos: [...this.state.todos.filter(todo => todo.id !== id)] }));
+
+    // this.setState({ todos: [...this.state.todos.filter(todo => todo.id !== id)] });
   }
 
   // Add To-Do
   addTask = (title) => {
-    const newTask = {
-      id: uuid.v4(),
+    axios.post('https://jsonplaceholder.typicode.com/todos', {
       title,
       completed: false
-    }
-    this.setState({ todos: [...this.state.todos, newTask] });
+    })
+      .then(res => this.setState({ todos: [...this.state.todos, res.data] }));
+
+    // const newTask = {
+    //   id: uuid.v4(),
+    //   title,
+    //   completed: false
+    // }
   }
 
   render() {
